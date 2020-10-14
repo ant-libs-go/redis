@@ -11,14 +11,18 @@ import (
 	"fmt"
 	"testing"
 	//. "github.com/smartystreets/goconvey/convey"
-	rds "github.com/gomodule/redigo/redis"
+	//rds "github.com/gomodule/redigo/redis"
 )
 
 func TestEncode(t *testing.T) {
 	New("qa01", "192.168.0.230:6379")
 
 	conn := Get("qa01")
-	fmt.Println(rds.Bool(conn.Do("BF.ADD", "ddd", "aaaa")))
+	a, _ := conn.Do("SET", "aaa", 10, "EX", 10, "NX")
+	if a == nil {
+		fmt.Println("aaa")
+	}
+	fmt.Println("bbb")
 
 	/*
 		Convey("TestEncode", t, func() {

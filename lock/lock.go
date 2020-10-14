@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/ant-libs-go/redis"
 	"github.com/ant-libs-go/util"
 	rds "github.com/gomodule/redigo/redis"
 	uuid "github.com/satori/go.uuid"
@@ -67,7 +68,7 @@ func (this *Lock) refreshLockStatus() (err error) {
 
 	var v int
 	v, err = rds.Int(conn.Do("GET", this.key))
-	if err != nil {
+	if redis.HasError(err) {
 		return
 	}
 	this.status = LockStatus(v)
@@ -111,12 +112,12 @@ func (this *Lock) Lock(aliveSeconds int64) (err error) {
 	}
 	defer this.refreshLockStatus()
 
-	var suc bool
-	suc, err = rds.Bool(conn.Do("SET", this.key, int(status), "EX", aliveSeconds, "NX"))
-	if err != nil {
+	var res interface{}
+	res, err = conn.Do("SET", this.key, int(status), "EX", aliveSeconds, "NX")
+	if redis.HasError(err) {
 		return
 	}
-	if suc == false {
+	if res == nil {
 		err = ErrLock
 	}
 	return
@@ -146,15 +147,15 @@ func (this *Lock) Commit() (err error) {
 
 	var aliveSeconds int64
 	aliveSeconds, err = rds.Int64(conn.Do("TTL", this.key))
-	if err != nil {
+	if redis.HasError(err) {
 		return
 	}
-	var suc bool
-	suc, err = rds.Bool(conn.Do("SET", this.key, int(LockStatusFinished), "EX", aliveSeconds, "XX"))
-	if err != nil {
+	var res interface{}
+	res, err = conn.Do("SET", this.key, int(LockStatusFinished), "EX", aliveSeconds, "XX")
+	if redis.HasError(err) {
 		return
 	}
-	if suc == false {
+	if res == nil {
 		err = fmt.Errorf("commit error")
 	}
 	return
