@@ -40,10 +40,10 @@ type Lock struct {
 	key         string
 	transaction bool
 	status      LockStatus
-	client      rds.Pool
+	client      *rds.Pool
 }
 
-func New(key interface{}, client rds.Pool) (r *Lock, err error) {
+func New(key interface{}, client *rds.Pool) (r *Lock, err error) {
 	if key == nil {
 		err = fmt.Errorf("key is empty")
 		return
