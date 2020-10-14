@@ -71,6 +71,7 @@ func (this *Lock) refreshLockStatus() (err error) {
 	if redis.HasError(err) {
 		return
 	}
+	err = nil
 	this.status = LockStatus(v)
 	return
 }
