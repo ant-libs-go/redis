@@ -74,4 +74,11 @@ func Get(name string) rds.Conn {
 	return pool.Get()
 }
 
+func HasError(err error) bool {
+	if err != nil && err.Error() != rds.ErrNil.Error() {
+		return true
+	}
+	return false
+}
+
 // vim: set noexpandtab ts=4 sts=4 sw=4 :
