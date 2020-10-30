@@ -19,7 +19,7 @@ import (
 )
 
 /*
-	lk, _ := New("hahahalock", redis.GetPool("default"))
+	lk, _ := New("hahahalock", redis.DefaultPool())
 	lk.Transaction().WaitAndLock(86400)
 	fmt.Println(lk.Commit())
 */
