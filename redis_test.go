@@ -9,20 +9,35 @@ package redis
 
 import (
 	"fmt"
+	"os"
 	"testing"
+	"time"
+
+	"github.com/ant-libs-go/config"
+	"github.com/ant-libs-go/config/options"
+	"github.com/ant-libs-go/config/parser"
 	//. "github.com/smartystreets/goconvey/convey"
 	//rds "github.com/gomodule/redigo/redis"
 )
 
-func TestEncode(t *testing.T) {
-	New("qa01", "192.168.0.230:6379")
+var globalCfg *config.Config
 
-	conn := Get("qa01")
-	a, _ := conn.Do("SET", "aaa", 10, "EX", 10, "NX")
-	if a == nil {
-		fmt.Println("aaa")
+func TestMain(m *testing.M) {
+	config.New(parser.NewTomlParser(),
+		options.WithCfgSource("/tmp/app.toml"),
+		options.WithCheckInterval(1))
+	os.Exit(m.Run())
+}
+
+func TestBasic(t *testing.T) {
+
+	//fmt.Println(Valid())
+	for {
+		cli := DefaultClient()
+		defer cli.Close()
+		fmt.Println(cli.Do("SET", "testkey", "12345"))
+		time.Sleep(time.Second)
 	}
-	fmt.Println("bbb")
 
 	/*
 		Convey("TestEncode", t, func() {
