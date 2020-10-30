@@ -33,8 +33,7 @@ type redisConfig struct {
 
 type Cfg struct {
 	// dial
-	DialHost           string        `toml:"host"`
-	DialPort           int           `toml:"port"`
+	DialAddr           string        `toml:"addr"`
 	DialUsername       string        `toml:"user"`
 	DialPassword       string        `toml:"pawd"`
 	DialDatabase       int           `toml:"database"`
