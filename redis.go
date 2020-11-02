@@ -8,7 +8,6 @@
 package redis
 
 import (
-	"fmt"
 	"time"
 
 	rds "github.com/gomodule/redigo/redis"
@@ -20,7 +19,7 @@ func NewRedisPool(cfg *Cfg) *rds.Pool {
 		IdleTimeout: 60 * time.Second,
 		Wait:        cfg.PoolWait,
 		Dial: func() (r rds.Conn, err error) {
-			return rds.Dial("tcp", fmt.Sprintf("%s:%d", cfg.DialHost, cfg.DialPort), buildDialOptions(cfg)...)
+			return rds.Dial("tcp", cfg.DialAddr, buildDialOptions(cfg)...)
 		},
 		TestOnBorrow: func(c rds.Conn, t time.Time) error {
 			_, err := c.Do("PING")
@@ -71,7 +70,7 @@ func buildDialOptions(cfg *Cfg) (r []rds.DialOption) {
 }
 
 func HasError(err error) bool {
-	if err != nil && err.Error() != rds.ErrNil.Error() {
+	if err != nil && err != rds.ErrNil {
 		return true
 	}
 	return false
