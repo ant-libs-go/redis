@@ -4,6 +4,8 @@ github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/ant-libs-go/config v0.2.5 h1:Gs7JrV/0hxaxojMrPbqm4uAIgZvpj3++0WkYuXoN+lo=
 github.com/ant-libs-go/config v0.2.5/go.mod h1:cY6fMYlLpo3fXxVLwMfzbTPKtmV0fC0h0ZByur7qQaQ=
+github.com/ant-libs-go/safe_stop v0.0.2 h1:NA0SryLYsmzTxRzhxEtB+HgyUIGkX95H6itrZUlzq7g=
+github.com/ant-libs-go/safe_stop v0.0.2/go.mod h1:oU7XCjqgocCTRwlIxVjbawe8qNqyaJLK1fR1vr6XvKw=
 github.com/ant-libs-go/util v0.1.29 h1:0wD5BcFE2D+odXYnODEe+tFXdRoPuOL0btLwFjfASkw=
 github.com/ant-libs-go/util v0.1.29/go.mod h1:02Rkjq7H3rDCNLeIyXWqx3on5TT/7zRATI2ooajb6hk=
 github.com/cihub/seelog v0.0.0-20170130134532-f561c5e57575/go.mod h1:9d6lWj8KzO/fd/NrVaLscBKmPigpZpn5YawRPw+e3Yo=
