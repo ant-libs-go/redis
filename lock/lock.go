@@ -50,7 +50,7 @@ func New(key interface{}, client *rds.Pool) (r *Lock, err error) {
 		return
 	}
 	var k []byte
-	if k, err = util.GobSerialize(key); err != nil {
+	if k, err = util.GobEncode(key); err != nil {
 		return
 	}
 	r = &Lock{client: client}
