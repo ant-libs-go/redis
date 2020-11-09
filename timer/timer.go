@@ -5,7 +5,7 @@
 # Description:
 ####################################################################### */
 
-package user_lottery
+package timer
 
 import (
 	"fmt"
@@ -18,14 +18,15 @@ import (
 )
 
 type Timer struct {
-	key      string
-	client   *rds.Pool
-	ticker   *time.Ticker
-	callback func(token string, tm time.Duration)
+	key          string
+	client       *rds.Pool
+	ticker       *time.Ticker
+	delaySeconds int64
+	callback     func(token string, tm time.Duration)
 }
 
-func NewTimer(timerId string, client *rds.Pool, fn func(token string, tm time.Duration)) *Timer {
-	o := &Timer{client: client, callback: fn}
+func NewTimer(timerId string, client *rds.Pool, fn func(token string, tm time.Duration), delaySeconds int64) *Timer {
+	o := &Timer{client: client, callback: fn, delaySeconds: delaySeconds}
 	o.key = fmt.Sprintf("TIMER.%s", timerId)
 	return o
 }
@@ -68,6 +69,13 @@ func (this *Timer) run() {
 func (this *Timer) Add(token string, delaySeconds int64) (err error) {
 	conn := this.client.Get()
 	defer conn.Close()
+
+	if delaySeconds == 0 {
+		delaySeconds = this.delaySeconds
+	}
+	if delaySeconds == 0 {
+		delaySeconds = 60
+	}
 
 	_, err = conn.Do("ZADD", this.key, "NX", time.Now().Unix()+delaySeconds, token)
 	return
