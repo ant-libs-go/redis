@@ -29,6 +29,8 @@ type LockStatus int
 var (
 	ErrLock          = errors.New("lock error")
 	ErrTransFinished = errors.New("transaction finished")
+	ErrNoTransaction = errors.New("no transaction")
+	ErrCommit        = errors.New("commit error")
 )
 
 const (
@@ -130,7 +132,7 @@ func (this *Lock) WaitAndLock(aliveSeconds int64) (err error) {
 			return
 		}
 		err = this.Lock(aliveSeconds)
-		if err == nil || err.Error() != ErrLock.Error() {
+		if err == nil || err != ErrLock {
 			break
 		}
 	}
@@ -139,7 +141,7 @@ func (this *Lock) WaitAndLock(aliveSeconds int64) (err error) {
 
 func (this *Lock) Commit() (err error) {
 	if this.transaction == false {
-		return fmt.Errorf("no transaction")
+		return ErrNoTransaction
 	}
 	defer this.refreshLockStatus()
 
@@ -157,7 +159,7 @@ func (this *Lock) Commit() (err error) {
 		return
 	}
 	if res == nil {
-		err = fmt.Errorf("commit error")
+		err = ErrCommit
 	}
 	return
 }
