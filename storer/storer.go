@@ -38,12 +38,14 @@ func NewStorer(storerId string, op Operator, lk *lock.Lock, timer *timer.Timer) 
 		return
 	}
 	if err = o.load(); err != nil {
+		o.Release()
 		return
 	}
 	if timer == nil {
 		return
 	}
 	if err = timer.Add(storerId, 0); err != nil {
+		o.Release()
 		return
 	}
 	return o, nil
