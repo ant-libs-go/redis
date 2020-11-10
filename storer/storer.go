@@ -41,12 +41,11 @@ func NewStorer(storerId string, op Operator, lk *lock.Lock, timer *timer.Timer) 
 		o.Release()
 		return
 	}
-	if timer == nil {
-		return
-	}
-	if err = timer.Add(storerId, 0); err != nil {
-		o.Release()
-		return
+	if timer != nil {
+		if err = timer.Add(storerId, 0); err != nil {
+			o.Release()
+			return
+		}
 	}
 	return o, nil
 }
@@ -70,6 +69,10 @@ func (this *Storer) load() (err error) {
 		}
 	}
 	return
+}
+
+func (this *Storer) Reload() (err error) {
+	return this.load()
 }
 
 func (this *Storer) Release() (err error) {
