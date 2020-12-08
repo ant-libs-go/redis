@@ -85,4 +85,12 @@ func (this *Timer) Stop() {
 	this.ticker.Stop()
 }
 
+func (this *Timer) Close() (err error) {
+	conn := this.client.Get()
+	defer conn.Close()
+
+	_, err = conn.Do("DEL", this.key)
+	return
+}
+
 // vim: set noexpandtab ts=4 sts=4 sw=4 :
