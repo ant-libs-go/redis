@@ -89,6 +89,7 @@ func (this *Timer) Close() (err error) {
 	conn := this.client.Get()
 	defer conn.Close()
 
+	this.Stop()
 	_, err = conn.Do("DEL", this.key)
 	return
 }
