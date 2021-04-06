@@ -1,8 +1,12 @@
-[redis]
-    [redis.default]
-        host = "127.0.0.1"
-        port = 6379
-        dial_timeout = 5000
-    [redis.niubi]
-        host = "127.0.0.1"
-        port = 6379
+[redis.default]
+	addr = "192.168.0.230:6380"
+	user = "root"
+	pawd = ""
+	dial_timeout = 5000
+	read_timeout = 5000
+	write_timeout = 5000
+	pool_max_idle = 5
+	pool_max_active = 10
+	pool_wait = true
+	pool_idle_time = 60000
+	pool_max_conn_life_time = 60000

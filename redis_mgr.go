@@ -46,7 +46,7 @@ type Cfg struct {
 	PoolMaxActive       int           `toml:"pool_max_active"`         // 最大活跃连接数
 	PoolIdleTimeout     time.Duration `toml:"pool_idle_time"`          // 闲置的过期时间，在Get方法中会对过期的连接删除
 	PoolWait            bool          `toml:"pool_wait"`               // 当活跃连接达到上限，Get时是等待还是返回错误。为false时返回错误，为true时阻塞等待
-	PoolMaxConnLifetime time.Duration `toml:"pool_max_conn_left_time"` // 连接最长生存时间，当超过时间会被删除
+	PoolMaxConnLifetime time.Duration `toml:"pool_max_conn_life_time"` // 连接最长生存时间，当超过时间会被删除
 }
 
 // 验证Redis实例的配置正确性与连通性。
