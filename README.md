@@ -1,5 +1,5 @@
 # redis
-基于redigo封装的Redis库，支持连接池、多实例等，且对分布式锁、storer等常用场景进行封装
+基于redigo封装的Redis库
 
 # 功能
  - 简化Redis实例初始化流程，基于配置自动对Redis进行初始化
