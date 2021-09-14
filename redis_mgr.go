@@ -149,16 +149,15 @@ func loadCfg(name string) (r *Cfg, err error) {
 func loadCfgs() (r map[string]*Cfg, err error) {
 	r = map[string]*Cfg{}
 
-	cfg := &redisConfig{}
 	once.Do(func() {
-		_, err = config.Load(cfg, options.WithOnChangeFn(func(cfg interface{}) {
+		config.Get(&redisConfig{}, options.WithOpOnChangeFn(func(cfg interface{}) {
 			lock.Lock()
 			defer lock.Unlock()
 			pools = map[string]*rds.Pool{}
 		}))
 	})
 
-	cfg = config.Get(cfg).(*redisConfig)
+	cfg := config.Get(&redisConfig{}).(*redisConfig)
 	if err == nil && (cfg.Cfgs == nil || len(cfg.Cfgs) == 0) {
 		err = fmt.Errorf("not configed")
 	}
