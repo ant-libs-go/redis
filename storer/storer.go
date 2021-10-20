@@ -8,6 +8,8 @@
 package storer
 
 import (
+	"fmt"
+
 	"github.com/ant-libs-go/redis/lock"
 	"github.com/ant-libs-go/redis/timer"
 )
@@ -28,6 +30,8 @@ type Storer struct {
 	timer *timer.Timer
 }
 
+// 同类数据的Storer的timerId唯一，如 PASSPORT
+// token 与 lock 中的 lockId 一致
 func NewStorer(token string, op Operator, lk *lock.Lock, timer *timer.Timer) (r *Storer, err error) {
 	o := &Storer{token: token, lk: lk, op: op, timer: timer}
 
@@ -78,6 +82,10 @@ func (this *Storer) GetOperator() (r Operator) {
 
 func (this *Storer) GetToken() (r string) {
 	return this.token
+}
+
+func (this *Storer) GetStorerId() (r string) {
+	return fmt.Sprintf("STORER.%s", this.token)
 }
 
 func (this *Storer) Release() (err error) {

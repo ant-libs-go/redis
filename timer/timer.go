@@ -25,6 +25,7 @@ type Timer struct {
 	callback     func(token string, tm time.Duration)
 }
 
+// delaySeconds 全局默认延迟时间，单位秒
 func NewTimer(timerId string, client *rds.Pool, fn func(token string, tm time.Duration), delaySeconds int64) *Timer {
 	o := &Timer{client: client, callback: fn, delaySeconds: delaySeconds}
 	o.key = fmt.Sprintf("TIMER.%s", timerId)
@@ -66,6 +67,7 @@ func (this *Timer) run() {
 	}
 }
 
+// delaySeconds 局部延迟时间，单位秒。当未设置时使用全局延迟时间
 func (this *Timer) Add(token string, delaySeconds int64) (err error) {
 	conn := this.client.Get()
 	defer conn.Close()
