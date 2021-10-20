@@ -22,6 +22,12 @@ import (
 	lk, _ := New("hahahalock", redis.DefaultPool())
 	lk.Transaction().WaitAndLock(86400)
 	fmt.Println(lk.Commit())
+
+	1、lk.Lock(10)，加锁，当锁存在时抛出错误
+	2、lk.Wait()，等待状态为未加锁
+	3、lk.WaitAndLock(10)，加锁，当锁存在时等待，直到加锁成功
+	4、lk.Transaction().WaitAndLock(10)、lk.Commit()，开启 transaction 后加 doing 锁，Commit将锁切换为 finished
+	5、lk.Release()，锁主动释放
 */
 
 type LockStatus int
@@ -46,20 +52,28 @@ type Lock struct {
 	client      *rds.Pool
 }
 
-func New(key interface{}, client *rds.Pool) (r *Lock, err error) {
-	if key == nil {
-		err = fmt.Errorf("key is empty")
-		return
+func New(lockId interface{}, client *rds.Pool) (r *Lock, err error) {
+	var key string
+
+	if v, ok := lockId.(string); ok {
+		if len(v) == 0 {
+			err = fmt.Errorf("lockId is empty string")
+			return
+		}
+		key = v
+	} else {
+		if lockId == nil {
+			err = fmt.Errorf("lockId is empty object")
+			return
+		}
+		var k []byte
+		if k, err = util.GobEncode(lockId); err != nil {
+			return
+		}
+		key = uuid.NewV3(uuid.Nil, string(k)).String()
 	}
-	var k []byte
-	if k, err = util.GobEncode(key); err != nil {
-		return
-	}
-	r = &Lock{client: client}
-	if r.key, _ = key.(string); len(r.key) == 0 {
-		r.key = uuid.NewV3(uuid.Nil, string(k)).String()
-	}
-	r.key = fmt.Sprintf("LOCK.%s", r.key)
+
+	r = &Lock{key: fmt.Sprintf("LOCK.%s", key), client: client}
 	r.refreshLockStatus()
 	return
 }
@@ -87,6 +101,8 @@ func (this *Lock) Transaction() *Lock {
 	return this
 }
 
+// 阻塞业务进程并直到锁状态为 normal 时释放阻塞
+// 当开启 transaction 时，锁状态为 Finished 时抛出错误
 func (this *Lock) Wait() (err error) {
 	for {
 		if err = this.refreshLockStatus(); err != nil {
@@ -105,6 +121,8 @@ func (this *Lock) Wait() (err error) {
 	return
 }
 
+// 加锁，需指定锁有效时间
+// 当开启 transaction 时，将锁状态设置为 Doing
 func (this *Lock) Lock(aliveSeconds int64) (err error) {
 	conn := this.client.Get()
 	defer conn.Close()
@@ -126,6 +144,7 @@ func (this *Lock) Lock(aliveSeconds int64) (err error) {
 	return
 }
 
+// 阻塞业务进程并直到加锁成功，需指定锁有效时间
 func (this *Lock) WaitAndLock(aliveSeconds int64) (err error) {
 	for {
 		if err = this.Wait(); err != nil {
@@ -139,6 +158,7 @@ func (this *Lock) WaitAndLock(aliveSeconds int64) (err error) {
 	return
 }
 
+// 仅开启 transaction 时有效，将锁状态切换为 Finished
 func (this *Lock) Commit() (err error) {
 	if this.transaction == false {
 		return ErrNoTransaction
@@ -164,6 +184,7 @@ func (this *Lock) Commit() (err error) {
 	return
 }
 
+// 主动释放锁
 func (this *Lock) Release() (err error) {
 	conn := this.client.Get()
 	defer this.refreshLockStatus()
