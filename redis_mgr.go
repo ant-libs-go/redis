@@ -28,7 +28,7 @@ func init() {
 }
 
 type redisConfig struct {
-	Cfgs map[string]*Cfg `toml:"redis"`
+	Cfgs map[string]*Cfg `toml:"redis" antcfg:"redis"`
 }
 
 type Cfg struct {
